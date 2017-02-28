@@ -24,6 +24,7 @@ public class CameraRig : MonoBehaviour
         public Vector3 camPositionOffsetRight;
 
         [Header("-Camera Options-")]
+        public Camera UICamera;
         public float mouseXSensitivity = 5.0f;
         public float mouseYSensitivity = 5.0f;
         public float minAngle = -30.0f;
@@ -252,11 +253,21 @@ public class CameraRig : MonoBehaviour
         {
             float newFieldOfView = Mathf.Lerp(mainCamera.fieldOfView, cameraSettings.zoomFieldOfView, Time.deltaTime * cameraSettings.zoomSpeed);
             mainCamera.fieldOfView = newFieldOfView;
+
+            if(cameraSettings.UICamera != null)
+            {
+                cameraSettings.UICamera.fieldOfView = newFieldOfView;
+            }
         }
         else
         {
             float originalFieldOfView = Mathf.Lerp(mainCamera.fieldOfView, cameraSettings.fieldOfView, Time.deltaTime * cameraSettings.zoomSpeed);
             mainCamera.fieldOfView = originalFieldOfView;
+
+            if (cameraSettings.UICamera != null)
+            {
+                cameraSettings.UICamera.fieldOfView = originalFieldOfView;
+            }
         }
     }
 

@@ -5,6 +5,7 @@ using UnityEngine;
 public class WeaponHandler : MonoBehaviour
 {
     Animator animator;
+    SoundController sc;
 
     [System.Serializable]
     public class UserSettings
@@ -37,6 +38,11 @@ public class WeaponHandler : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        GameObject check = GameObject.FindGameObjectWithTag("Sound Controller");
+        if (check != null)
+        {
+            sc = check.GetComponent<SoundController>();
+        }
         animator = GetComponent<Animator>();
     }
 
@@ -48,9 +54,18 @@ public class WeaponHandler : MonoBehaviour
             currentWeapon.SetEquipped(true);
             currentWeapon.SetOwner(this);
             AddWeaponToList(currentWeapon);
+            currentWeapon.ownerAiming = aim;
 
             if (currentWeapon.ammo.clipAmmo <= 0)
                 Reload();
+
+            if (reload)
+            {
+                if (settingWeapon)
+                {
+                    reload = false;
+                }
+            }
         }
 
         if(weaponsList.Count > 0)
@@ -108,7 +123,7 @@ public class WeaponHandler : MonoBehaviour
         if (!currentWeapon)
             return;
 
-        currentWeapon.PullTrigger(pulling);
+        currentWeapon.PullTrigger(pulling && aim && !reload);
     }
 
     public void Reload()
@@ -118,6 +133,17 @@ public class WeaponHandler : MonoBehaviour
 
         if (currentWeapon.ammo.carryingAmmo <= 0 || currentWeapon.ammo.clipAmmo == currentWeapon.ammo.maxClipAmmo)
             return;
+
+        if(sc != null)
+        {
+            if(currentWeapon.sounds.reloadSound != null)
+            {
+                if(currentWeapon.sounds.audioS != null)
+                {
+                    sc.PlaySound(currentWeapon.sounds.audioS, currentWeapon.sounds.reloadSound, true, currentWeapon.sounds.pitchMin, currentWeapon.sounds.pitchMax);
+                }
+            }
+        }
 
         reload = true;
         StartCoroutine(StopReload());

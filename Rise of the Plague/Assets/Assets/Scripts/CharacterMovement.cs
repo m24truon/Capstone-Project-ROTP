@@ -46,12 +46,18 @@ public class CharacterMovement : MonoBehaviour
     float gravity;
     bool isGrounded = true;
 
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+
+        SetupAnimator();
+
+    }
+
     // Use this for initialization
     void Start()
     {
-        animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
-        SetupAnimator();
 
     }
 

@@ -10,6 +10,7 @@ public class Weapon : MonoBehaviour
     Collider col;
     Rigidbody rigidBody;
     Animator animator;
+    SoundController sc;
 
     public enum WeaponType
     {
@@ -44,6 +45,7 @@ public class Weapon : MonoBehaviour
         public GameObject clip;
 
         [Header("-Other-")]
+        public GameObject crosshairPrefab;
         public float reloadDuration = 2.0f;
         public Transform shellEjectSpot;
         public float shellEjectSpeed = 7.5f;
@@ -74,17 +76,45 @@ public class Weapon : MonoBehaviour
     [SerializeField]
     public Ammunition ammo;
 
+    public Ray shootRay {protected get; set; }
+    public bool ownerAiming { get; set; }
+
     WeaponHandler owner;
     bool equipped;
     bool pullingTrigger;
     bool resetttingCartridge;
 
+    [System.Serializable]
+    public class SoundSettings
+    {
+        public AudioClip[] gunshotSounds;
+        public AudioClip reloadSound;
+        [Range(0, 3)]public float pitchMin = 1;
+        [Range(0, 3)]public float pitchMax = 1.2f;
+        public AudioSource audioS;
+
+    }
+    [SerializeField]
+    public SoundSettings sounds;
+
     // Use this for initialization
     void Start()
     {
+        GameObject check = GameObject.FindGameObjectWithTag("Sound Controller");
+        if(check != null)
+        {
+            sc = check.GetComponent<SoundController>();
+        }
+
         col = GetComponent<Collider>();
         rigidBody = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+
+        if(weaponSettings.crosshairPrefab != null)
+        {
+            weaponSettings.crosshairPrefab = Instantiate(weaponSettings.crosshairPrefab);
+            ToggleCrosshair(false);
+        }
     }
 
     // Update is called once per frame
@@ -102,7 +132,16 @@ public class Weapon : MonoBehaviour
 
                     if(pullingTrigger)
                     {
-                        Fire();
+                        Fire(shootRay);
+                    }
+
+                    if(ownerAiming)
+                    {
+                        PositionCrosshair(shootRay);
+                    }
+                    else
+                    {
+                        ToggleCrosshair(false);
                     }
                 }
             }
@@ -116,11 +155,13 @@ public class Weapon : MonoBehaviour
             DisableEnableComponents(true);
 
             transform.SetParent(null);
+
+            ownerAiming = false;
         }
     }
 
     //This fires the weapon
-    void Fire()
+    void Fire(Ray ray)
     {
         if (ammo.clipAmmo <= 0 || resetttingCartridge || !weaponSettings.bulletSpawn)
             return;
@@ -128,58 +169,18 @@ public class Weapon : MonoBehaviour
         RaycastHit hit;
         Transform bSpawn = weaponSettings.bulletSpawn;
         Vector3 bSpawnPoint = bSpawn.position;
-        Vector3 dir = bSpawn.forward;
+        Vector3 dir = ray.GetPoint(weaponSettings.range);
 
         dir += (Vector3)Random.insideUnitCircle * weaponSettings.bulletSpread;
 
         if(Physics.Raycast(bSpawnPoint, dir, out hit, weaponSettings.range, weaponSettings.bulletLayers))
         {
-            #region decal
-            if(hit.collider.gameObject.isStatic)
-            {
-                if(weaponSettings.decal)
-                {
-                    Vector3 hitPoint = hit.point;
-                    Quaternion lookRotation = Quaternion.LookRotation(hit.normal);
-                    GameObject decal = Instantiate(weaponSettings.decal, hitPoint, lookRotation) as GameObject;
-                    Transform decalT = decal.transform;
-                    Transform hitT = hit.transform;
-                    decalT.SetParent(hitT);
-                    Destroy(decal, Random.Range(30.0f, 45.0f));
-                }
-            }
-            #endregion
+            HitEffects(hit);
+           
         }
 
-        #region muzzle flash
-        if(weaponSettings.muzzleFlash)
-        {
-            Vector3 bulletSpawnPos = weaponSettings.bulletSpawn.position;
-            GameObject muzzleFlash = Instantiate(weaponSettings.muzzleFlash, bulletSpawnPos, Quaternion.identity) as GameObject;
-            Transform muzzleT = muzzleFlash.transform;
-            muzzleT.SetParent(weaponSettings.bulletSpawn);
-            Destroy(muzzleFlash, 1.0f);
-        }
-        #endregion
-
-        #region shell
-        if(weaponSettings.shell)
-        {
-            if(weaponSettings.shellEjectSpot)
-            {
-                Vector3 shellEjectPos = weaponSettings.shellEjectSpot.position;
-                Quaternion shellEjectRot = weaponSettings.shellEjectSpot.rotation;
-                GameObject shell = Instantiate(weaponSettings.shell, shellEjectPos, shellEjectRot) as GameObject;
-
-                if(shell.GetComponent<Rigidbody>())
-                {
-                    Rigidbody rigidB = shell.GetComponent<Rigidbody>();
-                    rigidB.AddForce(weaponSettings.shellEjectSpot.forward * weaponSettings.shellEjectSpeed, ForceMode.Impulse);
-                }
-                Destroy(shell, Random.Range(30.0f, 45.0f));
-            }
-        }
-        #endregion
+        GunEffects();
+        
 
         if (weaponSettings.useAnimation)
             animator.Play(weaponSettings.fireAnimationName, weaponSettings.fireAnimationLayer);
@@ -194,6 +195,107 @@ public class Weapon : MonoBehaviour
     {
         yield return new WaitForSeconds(weaponSettings.fireRate);
         resetttingCartridge = false;
+    }
+
+    void HitEffects(RaycastHit hit)
+    {
+        if (hit.collider.gameObject.isStatic)
+        {
+            if (weaponSettings.decal)
+            {
+                Vector3 hitPoint = hit.point;
+                Quaternion lookRotation = Quaternion.LookRotation(hit.normal);
+                GameObject decal = Instantiate(weaponSettings.decal, hitPoint, lookRotation) as GameObject;
+                Transform decalT = decal.transform;
+                Transform hitT = hit.transform;
+                decalT.SetParent(hitT);
+                Destroy(decal, Random.Range(30.0f, 45.0f));
+            }
+        }
+    }
+
+    void GunEffects()
+    {
+        
+        if (weaponSettings.muzzleFlash)
+        {
+            Vector3 bulletSpawnPos = weaponSettings.bulletSpawn.position;
+            GameObject muzzleFlash = Instantiate(weaponSettings.muzzleFlash, bulletSpawnPos, Quaternion.identity) as GameObject;
+            Transform muzzleT = muzzleFlash.transform;
+            muzzleT.SetParent(weaponSettings.bulletSpawn);
+            Destroy(muzzleFlash, 1.0f);
+        }
+        
+
+        
+        if (weaponSettings.shell)
+        {
+            if (weaponSettings.shellEjectSpot)
+            {
+                Vector3 shellEjectPos = weaponSettings.shellEjectSpot.position;
+                Quaternion shellEjectRot = weaponSettings.shellEjectSpot.rotation;
+                GameObject shell = Instantiate(weaponSettings.shell, shellEjectPos, shellEjectRot) as GameObject;
+
+                if (shell.GetComponent<Rigidbody>())
+                {
+                    Rigidbody rigidB = shell.GetComponent<Rigidbody>();
+                    rigidB.AddForce(weaponSettings.shellEjectSpot.forward * weaponSettings.shellEjectSpeed, ForceMode.Impulse);
+                }
+                Destroy(shell, Random.Range(30.0f, 45.0f));
+            }
+        }
+
+        if(sc == null)
+        {
+            return;
+        }
+
+        if(sounds.audioS != null)
+        {
+            if(sounds.gunshotSounds.Length > 0)
+            {
+                sc.InstantiateClip(
+                    weaponSettings.bulletSpawn.position, // where we want to play sound from
+                    sounds.gunshotSounds[Random.Range(0, sounds.gunshotSounds.Length)], //what audio clip we will use for sound
+                    2, //how long before we destroy audio
+                    true, // do we want to ranomize sound?
+                    sounds.pitchMin, //minimum pitch that sound will use
+                    sounds.pitchMax); //maximum pitch that sound will use
+            }
+        }
+       
+    }
+
+    //Position crosshair to point we are aiming
+    void PositionCrosshair(Ray ray)
+    {
+        RaycastHit hit;
+        Transform bSpawn = weaponSettings.bulletSpawn;
+        Vector3 bSpawnPoint = bSpawn.position;
+        Vector3 dir = ray.GetPoint(weaponSettings.range);
+
+        if (Physics.Raycast(bSpawnPoint, dir, out hit, weaponSettings.range, weaponSettings.bulletLayers))
+        {
+            if(weaponSettings.crosshairPrefab != null)
+            {
+                ToggleCrosshair(true);
+                weaponSettings.crosshairPrefab.transform.position = hit.point;
+                weaponSettings.crosshairPrefab.transform.LookAt(Camera.main.transform);
+            }
+        }
+        else
+        {
+            ToggleCrosshair(false);
+        }
+    }
+
+    //Toggle on and off the crosshair prefab
+    void ToggleCrosshair(bool enabled)
+    {
+        if(weaponSettings.crosshairPrefab != null)
+        {
+            weaponSettings.crosshairPrefab.SetActive(enabled);
+        }
     }
 
     //Disables or enables collider and rigidbody

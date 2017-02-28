@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class UserInput : MonoBehaviour
 {
-    CharacterMovement characterMove;
-    WeaponHandler weaponHandler;
+    public CharacterMovement characterMove { get; protected set; }
+    public WeaponHandler weaponHandler { get; protected set; }
 
     [System.Serializable]
     public class InputSettings
@@ -37,13 +37,12 @@ public class UserInput : MonoBehaviour
     public Transform spine;
     bool aiming;
 
-    Camera mainCam;
+    public Camera TPSCamera;
 
     // Use this for initialization
     void Start()
     {
         characterMove = GetComponent<CharacterMovement>();
-        mainCam = Camera.main;
         weaponHandler = GetComponent<WeaponHandler>();
     }
 
@@ -87,7 +86,7 @@ public class UserInput : MonoBehaviour
     //Handles camera logic
     void CameraLookLogic()
     {
-        if (!mainCam)
+        if (!TPSCamera)
             return;
 
         if (other.requireInputForTurn)
@@ -128,16 +127,21 @@ public class UserInput : MonoBehaviour
 
             if (Input.GetButtonDown(input.switchWeaponButton))
                 weaponHandler.SwitchWeapons();
+
+            if (!weaponHandler.currentWeapon)
+                return;
+
+            weaponHandler.currentWeapon.shootRay = new Ray(TPSCamera.transform.position, TPSCamera.transform.forward);
         }
     }
 
     //Positions the spine when aiming
     void PositionSpine()
     {
-        if (!spine || !weaponHandler.currentWeapon || !mainCam)
+        if (!spine || !weaponHandler.currentWeapon || !TPSCamera)
             return;
 
-        Transform mainCamT = mainCam.transform;
+        Transform mainCamT = TPSCamera.transform;
         Vector3 mainCamPos = mainCamT.position;
         Vector3 dir = mainCamT.forward;
         Ray ray = new Ray(mainCamPos, dir);
@@ -153,7 +157,7 @@ public class UserInput : MonoBehaviour
     //Make the character look at a forward point from the camera
     void CharacterLook()
     {
-        Transform mainCamT = mainCam.transform;
+        Transform mainCamT = TPSCamera.transform;
         Transform pivotT = mainCamT.parent;
         Vector3 pivotPos = pivotT.position;
         Vector3 lookTarget = pivotPos + (pivotT.forward * other.lookDistance);
