@@ -57,9 +57,9 @@ public class UserInput : MonoBehaviour
 
     void LateUpdate()
     {
-        if(weaponHandler)
+        if (weaponHandler)
         {
-            if(weaponHandler.currentWeapon)
+            if (weaponHandler.currentWeapon)
             {
                 if (aiming)
                     PositionSpine();
@@ -89,6 +89,9 @@ public class UserInput : MonoBehaviour
         if (!TPSCamera)
             return;
 
+        other.requireInputForTurn = !aiming;
+
+
         if (other.requireInputForTurn)
         {
             if (Input.GetAxis(input.horizontalAxis) != 0 || Input.GetAxis(input.verticalAxis) != 0)
@@ -111,13 +114,19 @@ public class UserInput : MonoBehaviour
 
         aiming = Input.GetButton(input.aimButton) || debugAim;
 
-        if(weaponHandler.currentWeapon)
+        weaponHandler.Aim(aiming);
+
+        if (Input.GetButtonDown(input.switchWeaponButton))
+            weaponHandler.SwitchWeapons();
+
+        if (weaponHandler.currentWeapon)
         {
-            weaponHandler.Aim(aiming);
 
-            other.requireInputForTurn = !aiming;
+            Ray aimRay = new Ray(TPSCamera.transform.position, TPSCamera.transform.forward);
+            weaponHandler.currentWeapon.aimRay = aimRay;
 
-            weaponHandler.FingerOnTrigger(Input.GetButton(input.fireButton));
+            if (Input.GetButton(input.fireButton) && aiming)
+                weaponHandler.FireCurrentWeapon(aimRay);
 
             if (Input.GetButtonDown(input.reloadButton))
                 weaponHandler.Reload();
@@ -125,13 +134,10 @@ public class UserInput : MonoBehaviour
             if (Input.GetButtonDown(input.dropWeaponButton))
                 weaponHandler.DropCurWeapon();
 
-            if (Input.GetButtonDown(input.switchWeaponButton))
-                weaponHandler.SwitchWeapons();
+            
 
-            if (!weaponHandler.currentWeapon)
-                return;
 
-            weaponHandler.currentWeapon.shootRay = new Ray(TPSCamera.transform.position, TPSCamera.transform.forward);
+
         }
     }
 
@@ -146,9 +152,9 @@ public class UserInput : MonoBehaviour
         Vector3 dir = mainCamT.forward;
         Ray ray = new Ray(mainCamPos, dir);
 
-        
-            spine.LookAt(ray.GetPoint(50));
-        
+
+        spine.LookAt(ray.GetPoint(50));
+
 
         Vector3 eulerAngleOffset = weaponHandler.currentWeapon.userSettings.spineRotation;
         spine.Rotate(eulerAngleOffset);

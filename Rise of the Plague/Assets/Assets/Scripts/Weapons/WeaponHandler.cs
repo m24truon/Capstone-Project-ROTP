@@ -118,12 +118,17 @@ public class WeaponHandler : MonoBehaviour
     }
 
     //Puts the finger on the trigger and asks if we pulled
-    public void FingerOnTrigger(bool pulling)
+    public void FireCurrentWeapon(Ray aimRay)
     {
-        if (!currentWeapon)
+        
+        if(currentWeapon.ammo.clipAmmo == 0)
+        {
+            Reload();
             return;
+        }
 
-        currentWeapon.PullTrigger(pulling && aim && !reload);
+        currentWeapon.Fire(aimRay);
+
     }
 
     public void Reload()

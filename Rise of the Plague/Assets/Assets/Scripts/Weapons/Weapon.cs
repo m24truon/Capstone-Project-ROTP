@@ -14,7 +14,7 @@ public class Weapon : MonoBehaviour
 
     public enum WeaponType
     {
-        Pistol,Rifle
+        Pistol, Rifle
     }
     public WeaponType weaponType;
 
@@ -76,12 +76,12 @@ public class Weapon : MonoBehaviour
     [SerializeField]
     public Ammunition ammo;
 
-    public Ray shootRay {protected get; set; }
+    //Crosshair
+    public Ray aimRay { protected get; set; }
     public bool ownerAiming { get; set; }
 
     WeaponHandler owner;
     bool equipped;
-    bool pullingTrigger;
     bool resetttingCartridge;
 
     [System.Serializable]
@@ -89,8 +89,10 @@ public class Weapon : MonoBehaviour
     {
         public AudioClip[] gunshotSounds;
         public AudioClip reloadSound;
-        [Range(0, 3)]public float pitchMin = 1;
-        [Range(0, 3)]public float pitchMax = 1.2f;
+        [Range(0, 3)]
+        public float pitchMin = 1;
+        [Range(0, 3)]
+        public float pitchMax = 1.2f;
         public AudioSource audioS;
 
     }
@@ -101,7 +103,7 @@ public class Weapon : MonoBehaviour
     void Start()
     {
         GameObject check = GameObject.FindGameObjectWithTag("Sound Controller");
-        if(check != null)
+        if (check != null)
         {
             sc = check.GetComponent<SoundController>();
         }
@@ -110,7 +112,7 @@ public class Weapon : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
 
-        if(weaponSettings.crosshairPrefab != null)
+        if (weaponSettings.crosshairPrefab != null)
         {
             weaponSettings.crosshairPrefab = Instantiate(weaponSettings.crosshairPrefab);
             ToggleCrosshair(false);
@@ -124,20 +126,16 @@ public class Weapon : MonoBehaviour
         {
             DisableEnableComponents(false);
 
-            if(equipped)
+            if (equipped)
             {
-                if(owner.userSettings.rightHand)
+                if (owner.userSettings.rightHand)
                 {
                     Equip();
 
-                    if(pullingTrigger)
-                    {
-                        Fire(shootRay);
-                    }
 
-                    if(ownerAiming)
+                    if (ownerAiming)
                     {
-                        PositionCrosshair(shootRay);
+                        PositionCrosshair(aimRay);
                     }
                     else
                     {
@@ -147,21 +145,31 @@ public class Weapon : MonoBehaviour
             }
             else
             {
+                if (weaponSettings.bulletSpawn.childCount > 0)
+                {
+                    foreach (Transform t in weaponSettings.bulletSpawn.GetComponentsInChildren<Transform>())
+                    {
+                             if (t != weaponSettings.bulletSpawn)
+                        {
+                             Destroy(t.gameObject);
+                        }
+                    }
+                }
                 Unequip(weaponType);
+                ToggleCrosshair(false);
             }
         }
-        else
+        else //if owner is null
         {
+            ToggleCrosshair(false);
             DisableEnableComponents(true);
-
             transform.SetParent(null);
-
             ownerAiming = false;
         }
     }
 
     //This fires the weapon
-    void Fire(Ray ray)
+    public void Fire(Ray ray)
     {
         if (ammo.clipAmmo <= 0 || resetttingCartridge || !weaponSettings.bulletSpawn)
             return;
@@ -169,18 +177,18 @@ public class Weapon : MonoBehaviour
         RaycastHit hit;
         Transform bSpawn = weaponSettings.bulletSpawn;
         Vector3 bSpawnPoint = bSpawn.position;
-        Vector3 dir = ray.GetPoint(weaponSettings.range);
+        Vector3 dir = ray.GetPoint(weaponSettings.range) - bSpawnPoint;
 
         dir += (Vector3)Random.insideUnitCircle * weaponSettings.bulletSpread;
 
-        if(Physics.Raycast(bSpawnPoint, dir, out hit, weaponSettings.range, weaponSettings.bulletLayers))
+        if (Physics.Raycast(bSpawnPoint, dir, out hit, weaponSettings.range, weaponSettings.bulletLayers))
         {
             HitEffects(hit);
-           
+
         }
 
         GunEffects();
-        
+
 
         if (weaponSettings.useAnimation)
             animator.Play(weaponSettings.fireAnimationName, weaponSettings.fireAnimationLayer);
@@ -209,14 +217,14 @@ public class Weapon : MonoBehaviour
                 Transform decalT = decal.transform;
                 Transform hitT = hit.transform;
                 decalT.SetParent(hitT);
-                Destroy(decal, Random.Range(30.0f, 45.0f));
+                Destroy(decal, Random.Range(15.0f, 20.0f));
             }
         }
     }
 
     void GunEffects()
     {
-        
+
         if (weaponSettings.muzzleFlash)
         {
             Vector3 bulletSpawnPos = weaponSettings.bulletSpawn.position;
@@ -225,9 +233,9 @@ public class Weapon : MonoBehaviour
             muzzleT.SetParent(weaponSettings.bulletSpawn);
             Destroy(muzzleFlash, 1.0f);
         }
-        
 
-        
+
+
         if (weaponSettings.shell)
         {
             if (weaponSettings.shellEjectSpot)
@@ -241,18 +249,24 @@ public class Weapon : MonoBehaviour
                     Rigidbody rigidB = shell.GetComponent<Rigidbody>();
                     rigidB.AddForce(weaponSettings.shellEjectSpot.forward * weaponSettings.shellEjectSpeed, ForceMode.Impulse);
                 }
-                Destroy(shell, Random.Range(30.0f, 45.0f));
+                Destroy(shell, Random.Range(15.0f, 20.0f));
             }
         }
 
-        if(sc == null)
+        PlayGunshotSound();
+
+    }
+
+    void PlayGunshotSound()
+    {
+        if (sc == null)
         {
             return;
         }
 
-        if(sounds.audioS != null)
+        if (sounds.audioS != null)
         {
-            if(sounds.gunshotSounds.Length > 0)
+            if (sounds.gunshotSounds.Length > 0)
             {
                 sc.InstantiateClip(
                     weaponSettings.bulletSpawn.position, // where we want to play sound from
@@ -263,8 +277,8 @@ public class Weapon : MonoBehaviour
                     sounds.pitchMax); //maximum pitch that sound will use
             }
         }
-       
     }
+
 
     //Position crosshair to point we are aiming
     void PositionCrosshair(Ray ray)
@@ -272,11 +286,11 @@ public class Weapon : MonoBehaviour
         RaycastHit hit;
         Transform bSpawn = weaponSettings.bulletSpawn;
         Vector3 bSpawnPoint = bSpawn.position;
-        Vector3 dir = ray.GetPoint(weaponSettings.range);
+        Vector3 dir = ray.GetPoint(weaponSettings.range) - bSpawnPoint;
 
         if (Physics.Raycast(bSpawnPoint, dir, out hit, weaponSettings.range, weaponSettings.bulletLayers))
         {
-            if(weaponSettings.crosshairPrefab != null)
+            if (weaponSettings.crosshairPrefab != null)
             {
                 ToggleCrosshair(true);
                 weaponSettings.crosshairPrefab.transform.position = hit.point;
@@ -292,7 +306,7 @@ public class Weapon : MonoBehaviour
     //Toggle on and off the crosshair prefab
     void ToggleCrosshair(bool enabled)
     {
-        if(weaponSettings.crosshairPrefab != null)
+        if (weaponSettings.crosshairPrefab != null)
         {
             weaponSettings.crosshairPrefab.SetActive(enabled);
         }
@@ -301,7 +315,7 @@ public class Weapon : MonoBehaviour
     //Disables or enables collider and rigidbody
     void DisableEnableComponents(bool enabled)
     {
-        if(!enabled)
+        if (!enabled)
         {
             rigidBody.isKinematic = true;
             col.enabled = false;
@@ -333,7 +347,7 @@ public class Weapon : MonoBehaviour
         if (!owner)
             return;
 
-        switch(wpType)
+        switch (wpType)
         {
             case WeaponType.Pistol:
                 transform.SetParent(owner.userSettings.pistolUnequipSpot);
@@ -352,7 +366,7 @@ public class Weapon : MonoBehaviour
     {
         int ammoNeeded = ammo.maxClipAmmo - ammo.clipAmmo;
 
-        if(ammoNeeded >= ammo.carryingAmmo)
+        if (ammoNeeded >= ammo.carryingAmmo)
         {
             ammo.clipAmmo = ammo.carryingAmmo;
             ammo.carryingAmmo = 0;
@@ -370,11 +384,7 @@ public class Weapon : MonoBehaviour
         equipped = equip;
     }
 
-    //Pulls the trigger
-    public void PullTrigger(bool isPulling)
-    {
-        pullingTrigger = isPulling;
-    }
+
 
     //Sets the owner of this weapon
     public void SetOwner(WeaponHandler wp)

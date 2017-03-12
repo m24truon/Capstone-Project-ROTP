@@ -28,6 +28,8 @@ public class CharacterMovement : MonoBehaviour
         public float gravityModifier = 9.81f;
         public float baseGravity = 50.0f;
         public float resetGravityValue = 1.2f;
+        public LayerMask groundLayers;
+        public float airSpeed = 2.5f;
     }
     [SerializeField]
     public PhysicsSettings physics;
@@ -41,10 +43,26 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField]
     public MovementSettings movement;
 
+    Vector3 airControl;
+    float forward;
+    float strafe;
+
     bool isJumping;
     bool resetGravity;
     float gravity;
-    bool isGrounded = true;
+
+    bool isGrounded ()
+    {
+        RaycastHit hit;
+        Vector3 start = transform.position + transform.up;
+        Vector3 dir = Vector3.down;
+        float radius = characterController.radius;
+        if(Physics.SphereCast(start, radius, dir, out hit, characterController.height / 2, physics.groundLayers))
+        {
+            return true;
+        }
+            return false;
+    }
 
     void Awake()
     {
@@ -65,22 +83,38 @@ public class CharacterMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        AirControl(forward, strafe);
         ApplyGravity();
-        isGrounded = characterController.isGrounded;
-        Animate(Input.GetAxis("Vertical"),Input.GetAxis("Horizontal"));
+        //isGrounded = characterController.isGrounded;
+        Animate(Input.GetAxis("Vertical"), Input.GetAxis("Horizontal"));
 
-        if(Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump"))
         {
             Jump();
+        }
+    }
+
+    void AirControl(float forward, float strafe)
+    {
+        if(isGrounded() == false)
+        {
+            airControl.x = strafe;
+            airControl.z = forward;
+            airControl = transform.TransformDirection(airControl);
+            airControl *= physics.airSpeed;
+
+            characterController.Move(airControl * Time.deltaTime);
         }
     }
 
     //Animates the character and root motion handles the movement
     public void Animate(float forward, float strafe)
     {
+        this.forward = forward;
+        this.strafe = strafe;
         animator.SetFloat(animations.verticalVelocityFloat, forward);
         animator.SetFloat(animations.horizontalVelocityFloat, strafe);
-        animator.SetBool(animations.groundedBool, isGrounded);
+        animator.SetBool(animations.groundedBool, isGrounded());
         animator.SetBool(animations.jumpBool, isJumping);
     }
 
@@ -89,7 +123,7 @@ public class CharacterMovement : MonoBehaviour
         if(isJumping)
             return;
 
-        if(isGrounded)
+        if(isGrounded())
         {
             isJumping = true;
             StartCoroutine(StopJump());
@@ -104,7 +138,7 @@ public class CharacterMovement : MonoBehaviour
 
     void ApplyGravity()
     {
-        if(!characterController.isGrounded)
+        if(!isGrounded())
         {
             if(!resetGravity)
             {

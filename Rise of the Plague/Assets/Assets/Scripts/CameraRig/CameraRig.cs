@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
-
+[ExecuteInEditMode]
 public class CameraRig : MonoBehaviour
 {
     public Transform target;
@@ -13,7 +12,6 @@ public class CameraRig : MonoBehaviour
     {
         Right, Left
     }
-
     public Shoulder shoulder;
 
     [System.Serializable]
@@ -62,10 +60,11 @@ public class CameraRig : MonoBehaviour
     [SerializeField]
     public MovementSettings movement;
 
-    Transform pivot;
-    Camera mainCamera;
     float newX = 0.0f;
     float newY = 0.0f;
+
+    public Camera mainCamera { get; protected set; }
+    public Transform pivot { get; set; }
 
     // Use this for initialization
     void Start()
@@ -77,16 +76,16 @@ public class CameraRig : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(target)
+        if (target)
         {
-            if(Application.isPlaying)
+            if (Application.isPlaying)
             {
                 RotateCamera();
                 CheckWall();
                 CheckMeshRenderer();
                 Zoom(Input.GetButton(input.aimButton));
 
-                if(Input.GetButtonDown(input.switchShoulderButton))
+                if (Input.GetButtonDown(input.switchShoulderButton))
                 {
                     SwitchShoulders();
                 }
@@ -96,27 +95,27 @@ public class CameraRig : MonoBehaviour
 
     void LateUpdate()
     {
-        if(!target)
+        if (!target)
         {
             TargetPlayer();
         }
         else
         {
-            Vector3 targetPosition = target.position;
+            Vector3 targetPostion = target.position;
             Quaternion targetRotation = target.rotation;
 
-            FollowTarget(targetPosition, targetRotation);
+            FollowTarget(targetPostion, targetRotation);
         }
     }
 
-    //Finds the player gameObject and sets it as target
+    //Finds the plater gameObject and sets it as target
     void TargetPlayer()
     {
-        if(autoTargetPlayer)
+        if (autoTargetPlayer)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
 
-            if(player)
+            if (player)
             {
                 Transform playerT = player.transform;
                 target = playerT;
@@ -127,7 +126,7 @@ public class CameraRig : MonoBehaviour
     //Following the target with Time.deltaTime smoothly
     void FollowTarget(Vector3 targetPosition, Quaternion targetRotation)
     {
-        if(!Application.isPlaying)
+        if (!Application.isPlaying)
         {
             transform.position = targetPosition;
             transform.rotation = targetRotation;
@@ -177,25 +176,25 @@ public class CameraRig : MonoBehaviour
 
         float dist = Mathf.Abs(shoulder == Shoulder.Left ? cameraSettings.camPositionOffsetLeft.z : cameraSettings.camPositionOffsetRight.z);
 
-        if(Physics.SphereCast(start, cameraSettings.maxCheckDist, dir, out hit, dist, wallLayers))
+        if (Physics.SphereCast(start, cameraSettings.maxCheckDist, dir, out hit, dist, wallLayers))
         {
             MoveCamUp(hit, pivotPos, dir, mainCamT);
         }
         else
         {
-            switch(shoulder)
+            switch (shoulder)
             {
                 case Shoulder.Left:
-                    PositionCamera(cameraSettings.camPositionOffsetLeft);
+                    PostionCamera(cameraSettings.camPositionOffsetLeft);
                     break;
                 case Shoulder.Right:
-                    PositionCamera(cameraSettings.camPositionOffsetRight);
+                    PostionCamera(cameraSettings.camPositionOffsetRight);
                     break;
             }
         }
     }
 
-    //This moves camera forward when we hit a wall
+    //This moves the camera forward when we hit a wall
     void MoveCamUp(RaycastHit hit, Vector3 pivotPos, Vector3 dir, Transform cameraT)
     {
         float hitDist = hit.distance;
@@ -203,8 +202,8 @@ public class CameraRig : MonoBehaviour
         cameraT.position = sphereCastCenter;
     }
 
-    //Positions the cameras localPosition to a given location
-    void PositionCamera(Vector3 cameraPos)
+    //Postions the cameras localPosition to a given location
+    void PostionCamera(Vector3 cameraPos)
     {
         if (!mainCamera)
             return;
@@ -218,7 +217,7 @@ public class CameraRig : MonoBehaviour
     //Hides the mesh targets mesh renderers when too close
     void CheckMeshRenderer()
     {
-        if (!mainCamera || target)
+        if (!mainCamera || !target)
             return;
 
         SkinnedMeshRenderer[] meshes = target.GetComponentsInChildren<SkinnedMeshRenderer>();
@@ -227,11 +226,11 @@ public class CameraRig : MonoBehaviour
         Vector3 targetPos = target.position;
         float dist = Vector3.Distance(mainCamPos, (targetPos + target.up));
 
-        if(meshes.Length > 0)
+        if (meshes.Length > 0)
         {
-            for(int i = 0; i < meshes.Length; i++)
+            for (int i = 0; i < meshes.Length; i++)
             {
-                if(dist <= cameraSettings.hideMeshWhenDistance)
+                if (dist <= cameraSettings.hideMeshWhenDistance)
                 {
                     meshes[i].enabled = false;
                 }
@@ -249,12 +248,12 @@ public class CameraRig : MonoBehaviour
         if (!mainCamera)
             return;
 
-        if(isZooming)
+        if (isZooming)
         {
             float newFieldOfView = Mathf.Lerp(mainCamera.fieldOfView, cameraSettings.zoomFieldOfView, Time.deltaTime * cameraSettings.zoomSpeed);
             mainCamera.fieldOfView = newFieldOfView;
 
-            if(cameraSettings.UICamera != null)
+            if (cameraSettings.UICamera != null)
             {
                 cameraSettings.UICamera.fieldOfView = newFieldOfView;
             }
@@ -274,7 +273,7 @@ public class CameraRig : MonoBehaviour
     //Switches the cameras shoulder view
     public void SwitchShoulders()
     {
-        switch(shoulder)
+        switch (shoulder)
         {
             case Shoulder.Left:
                 shoulder = Shoulder.Right;
