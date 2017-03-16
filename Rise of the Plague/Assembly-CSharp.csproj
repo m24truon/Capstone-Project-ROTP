@@ -5,7 +5,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{4E00D043-55CF-9977-8843-EE426A648F29}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -46,41 +47,68 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Assets\Scripts\ActiveStateToggler.cs" />
-     <Compile Include="Assets\Assets\Scripts\ApplicationManager.cs" />
-     <Compile Include="Assets\Assets\Scripts\ChangeColor.cs" />
-     <Compile Include="Assets\Assets\Scripts\DragMe.cs" />
-     <Compile Include="Assets\Assets\Scripts\DragPanel.cs" />
-     <Compile Include="Assets\Assets\Scripts\DropMe.cs" />
-     <Compile Include="Assets\Assets\Scripts\PanelManager.cs" />
-     <Compile Include="Assets\Assets\Scripts\ResizePanel.cs" />
-     <Compile Include="Assets\Assets\Scripts\ScrollDetailTexture.cs" />
-     <Compile Include="Assets\Assets\Scripts\ShowSliderValue.cs" />
-     <Compile Include="Assets\Assets\Scripts\TiltWindow.cs" />
-     <Compile Include="Assets\Scripts\LoadSceneOnClick.cs" />
-     <Compile Include="Assets\Scripts\MusicVolumeSlider.cs" />
-     <Compile Include="Assets\Scripts\SelectOnInput.cs" />
-     <None Include="Assets\Assets\Fonts\Jupiter\LICENSE.txt" />
-     <None Include="Assets\Assets\Textures and Sprites\SF UI\Background\LICENSE.txt" />
-     <None Include="Assets\Assets\Materials\UI-Default-No-Alpha.shader" />
- <Reference Include="UnityEngine.UI">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Networking">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.PlaymodeTestsRunner">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/PlaymodeTestsRunner/UnityEngine.PlaymodeTestsRunner.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.Analytics">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.HoloLens">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.VR">
- <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
- </Reference>
+    <Compile Include="Assets\Assets\Scripts\ActiveStateToggler.cs" />
+    <Compile Include="Assets\Assets\Scripts\ApplicationManager.cs" />
+    <Compile Include="Assets\Assets\Scripts\ChangeColor.cs" />
+    <Compile Include="Assets\Assets\Scripts\DragMe.cs" />
+    <Compile Include="Assets\Assets\Scripts\DragPanel.cs" />
+    <Compile Include="Assets\Assets\Scripts\DropMe.cs" />
+    <Compile Include="Assets\Assets\Scripts\PanelManager.cs" />
+    <Compile Include="Assets\Assets\Scripts\ResizePanel.cs" />
+    <Compile Include="Assets\Assets\Scripts\ScrollDetailTexture.cs" />
+    <Compile Include="Assets\Assets\Scripts\ShowSliderValue.cs" />
+    <Compile Include="Assets\Assets\Scripts\TiltWindow.cs" />
+    <Compile Include="Assets\Scripts\LoadSceneOnClick.cs" />
+    <Compile Include="Assets\Scripts\MusicVolumeSlider.cs" />
+    <Compile Include="Assets\Scripts\SelectOnInput.cs" />
+    <None Include="Assets\Assets\Fonts\Jupiter\LICENSE.txt" />
+    <None Include="Assets\Assets\Textures and Sprites\SF UI\Background\LICENSE.txt" />
+    <None Include="Assets\Assets\Materials\UI-Default-No-Alpha.shader" />
+    <Reference Include="Assembly-CSharp">
+      <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/ScriptAssemblies/Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Networking">
+      <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PlaymodeTestsRunner">
+      <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/PlaymodeTestsRunner/UnityEngine.PlaymodeTestsRunner.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Analytics">
+      <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HoloLens">
+      <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityHoloLens/RuntimeEditor/UnityEngine.HoloLens.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VR">
+      <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
+    </Reference>
+    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
+      <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.UI">
+      <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PlaymodeTestsRunner">
+      <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEngine.PlaymodeTestsRunner.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Networking">
+      <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEditor.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.Advertisements">
+      <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEditor.Advertisements.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.TreeEditor">
+      <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEditor.TreeEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HoloLens">
+      <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEngine.HoloLens.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -90,5 +118,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  
 </Project>

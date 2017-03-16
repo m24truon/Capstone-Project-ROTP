@@ -105,6 +105,36 @@
  <Reference Include="UnityEditor.OSXStandalone.Extensions">
  <HintPath>/Applications/Unity/Unity.app/Contents/PlaybackEngines/macstandalonesupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
  </Reference>
+ <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
+ <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.UI">
+ <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEditor.UI.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.PlaymodeTestsRunner">
+ <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEngine.PlaymodeTestsRunner.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Graphs">
+ <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEditor.Graphs.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Networking">
+ <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEditor.Networking.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.UI">
+ <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEngine.UI.dll</HintPath>
+ </Reference>
+ <Reference Include="Assembly-CSharp">
+ <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/ScriptAssemblies/Assembly-CSharp.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.Advertisements">
+ <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEditor.Advertisements.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEditor.TreeEditor">
+ <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEditor.TreeEditor.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.HoloLens">
+ <HintPath>/Users/joshuaderi/Desktop/Capstone-Project-ROTP/Rise of the Plague/Assets/Library/UnityAssemblies/UnityEngine.HoloLens.dll</HintPath>
+ </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp.csproj">
